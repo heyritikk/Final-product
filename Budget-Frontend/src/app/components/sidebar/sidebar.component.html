@@ -1,0 +1,40 @@
+<div class="sidebar"> -
+ 
+  <h2 class="logo">Planera</h2>
+ 
+  <ul>
+ 
+
+    <li routerLinkActive="active" [routerLink]="role === 'Manager' ? '/manager-dashboard' : '/employee-dashboard'">
+      🏠 Dashboard
+    </li>
+ 
+   
+    <li *ngIf="role === 'Manager'" routerLink="/budgets" routerLinkActive="active">
+      💰 Budgets
+    </li>
+ 
+    <li *ngIf="role === 'Manager'" routerLink="/approvals" routerLinkActive="active">
+      ✅ Approvals
+    </li>
+ 
+ 
+    <li *ngIf="role === 'Employee'" routerLink="/my-expenses" routerLinkActive="active">
+      📄 My Expenses
+    </li>
+ 
+   
+    <li routerLink="/notifications" routerLinkActive="active">
+      🔔 Notifications
+    </li>
+ 
+    <li (click)="logout()">
+      🚪 Logout
+    </li>
+ 
+  </ul>
+ 
+</div>
+
+
+ 

@@ -1,0 +1,249 @@
+<div class="layout" [class.sidebar-collapsed]="!isSidebarOpen">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+  <div class="sidebar-head">
+ <button type="button" class="menu-toggle sidebar-toggle" (click)="toggleSidebar()" aria-label="Toggle sidebar">
+ <span></span>
+ <span></span>
+ <span></span>
+ </button>
+    <h2 class="sidebar-title">Employee</h2>
+</div>
+    
+  <ul class="menu">
+ <li [class.active]="section === 'create-expense'" (click)="setSection('create-expense')">
+ <span class="menu-icon">⊞</span>
+ <span class="menu-text">Create Expense</span>
+ </li>
+ <li [class.active]="section === 'view-expenses'" (click)="setSection('view-expenses')">
+ <span class="menu-icon">▤</span>
+ <span class="menu-text">View Expenses</span>
+ </li>
+ <li [class.active]="section === 'notifications'" (click)="setSection('notifications')">
+<span class="menu-icon">&#9713;</span>
+<span class="menu-text">Notifications <span *ngIf="unreadNotificationsCount > 0">({{ unreadNotificationsCount }})</span></span>
+</li>
+ <li class="logout-item" (click)="logout()">
+ <span class="menu-icon">↩</span>
+ <span class="menu-text">Logout</span>
+ </li>
+ </ul>
+ </aside>
+
+  <!-- Main Content -->
+  <div class="main">
+
+    <header class="navbar">
+      <div class="navbar-left">
+        <div class="navbar-title-group">
+          <h3>Employee Dashboard</h3>
+          <p class="navbar-subtitle">Submit and track your expenses</p>
+        </div>
+        <div class="navbar-meta">
+          <span>Total Expenses: {{ expenses.length }}</span>
+        </div>
+      </div>
+
+      <div class="navbar-right">
+        <div class="user-pill">
+          <div class="user-name">{{ displayName }}</div>
+          <div class="user-role">Employee</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- Create Expense -->
+      <section *ngIf="section === 'create-expense'" class="card">
+
+        <form [formGroup]="expenseForm" (ngSubmit)="createExpense()" class="form-grid">
+          <div class="form-group">
+            <label>Manager</label>
+            
+              <select formControlName="managerId" [disabled]="!selectedBudgetCreatorId">
+ <option value="">{{ selectedBudgetCreatorId ? 'Budget creator manager' : 'Select budget first' }}</option>
+ <option *ngFor="let m of filteredManagers" [value]="m.userId">
+ {{ m.name }} ({{ m.email }})
+            </select>
+            <div class="error" *ngIf="f['managerId'].invalid && (f['managerId'].touched || f['managerId'].dirty)">
+              Please select a budget;manager will be auto-selected.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Amount</label>
+            <input type="number" formControlName="amount" placeholder="e.g. 1500" />
+            <div class="error" *ngIf="f['amount'].invalid && (f['amount'].touched || f['amount'].dirty)">
+              Please enter a positive amount.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Budget</label>
+            <select formControlName="budgetId">
+              <option value="">Select budget</option>
+              <option *ngFor="let b of budgets" [value]="b.budgetId">
+                {{ b.title }}
+              </option>
+            </select>
+            <div class="error" *ngIf="f['budgetId'].invalid && (f['budgetId'].touched || f['budgetId'].dirty)">
+              Please select a budget.
+            </div>
+          </div>
+
+          <div class="form-group full-width">
+            <label>Description</label>
+            <textarea formControlName="description" rows="3" placeholder="Short description of the expense"></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="primary-btn">
+              Submit Expense
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- View Expenses -->
+      <section *ngIf="section === 'view-expenses'" class="card">
+        <h4>My Expenses</h4>
+
+        <div *ngIf="isLoadingExpenses">Loading expenses...</div>
+
+          <table *ngIf="!isLoadingExpenses && expenses.length" class="table">
+          <thead>
+            <tr>
+              <th>Description</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let e of expenses">
+              <td>{{ e.description }}</td>
+              <td>{{ e.amount | currency }}</td>
+              <td>
+                <span class="badge" [ngClass]="{
+                  'badge-pending': e.status === 'Pending',
+                  'badge-approved': e.status === 'Approved',
+                  'badge-rejected': e.status === 'Rejected'
+                }">
+                 {{e.status }}
+                </span>
+              </td>
+              <td>
+                <button class="action-btn edit-btn" (click)="openEditModal(e)">Update</button>
+                <button class="action-btn delete-btn" (click)="deleteExpense(e.id)">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div *ngIf="!isLoadingExpenses && !expenses.length" class="empty-state">
+          No expenses created yet.
+        </div>
+      </section>
+
+      <!-- Notifications -->
+      <!-- <section *ngIf="section === 'notifications'" class="card">
+        <h4>Notifications</h4>
+
+        <div *ngIf="!notifications.length" class="empty-state">
+          No notifications yet.
+        </div>
+
+        <ul *ngIf="notifications.length" class="notification-list">
+          <li *ngFor="let n of notifications">
+            <div class="notification-pill" [ngClass]="{
+              'notif-approved': n.status === 'Approved',
+              'notif-rejected': n.status === 'Rejected'
+            }">
+              <span class="notif-type">{{ n.status }}</span>
+              <span class="notif-message">{{ n.message }}</span>
+              <span class="notif-time">{{ n.createdAt | date:'shortTime' }}</span>
+            </div>
+          </li>
+        </ul>
+      </section> -->
+
+      <!-- Notifications -->
+<section *ngIf="section === 'notifications'" class="card">
+<h4>Notifications</h4>
+ 
+<div *ngIf="!notifications.length" class="empty-state">
+
+No notifications yet.
+</div>
+ 
+<ul *ngIf="notifications.length" class="notification-list">
+<li *ngFor="let n of notifications">
+<div class="notification-pill" [ngClass]="{
+
+'notif-unread': n.readStatus === 'Unread',
+
+'notif-read': n.readStatus === 'Read'
+
+}">
+<span class="notif-type">{{ n.type }}</span>
+<span class="notif-message">{{ n.message }}</span>
+<span class="notif-time">{{ n.createdAt | date:'shortTime' }}</span>
+<span class="notif-read-state" [ngClass]="{ 'is-unread': n.readStatus === 'Unread', 'is-read': n.readStatus === 'Read' }">
+
+{{ n.readStatus }}
+</span>
+<button type="button" class="notif-read-btn" (click)="markNotificationAsRead(n)" [disabled]="n.readStatus === 'Read'">
+
+Mark as read
+</button>
+</div>
+</li>
+</ul>
+</section>
+
+ 
+
+    </div>
+  </div>
+
+  <!-- Edit Expense Modal -->
+  <div class="modal-backdrop" *ngIf="showEditModal">
+    <div class="modal">
+      <h4>Edit Expense</h4>
+
+      <form [formGroup]="editExpenseForm" (ngSubmit)="updateExpense()" class="form-grid">
+        <!-- <div class="form-group">
+          <label>Title</label>
+          <input type="text" formControlName="title" />
+        </div> -->
+
+        <div class="form-group">
+          <label>Amount</label>
+          <input type="number" formControlName="amount" />
+        </div>
+
+       
+
+        <select formControlName="budgetId">
+          <option value="">Select Budget</option>
+          <option *ngFor="let b of budgets"[value]="b.budgetId">
+            {{b.title}}
+          </option>
+        </select>
+
+        <div class="form-group full-width">
+          <label>Description</label>
+          <textarea formControlName="description" rows="3"></textarea>
+        </div>
+
+        <div class="form-actions modal-actions">
+          <button type="button" class="secondary-btn" (click)="closeEditModal()">Cancel</button>
+          <button type="submit" class="primary-btn">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>

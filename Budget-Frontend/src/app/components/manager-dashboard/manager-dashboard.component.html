@@ -1,0 +1,291 @@
+
+<div class="layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+ <div class="sidebar-head">
+ <button type="button" class="menu-toggle sidebar-toggle" (click)="toggleSidebar()" aria-label="Toggle sidebar">
+ <span></span>
+ <span></span>
+ <span></span>
+ </button>
+ <h2 class="sidebar-title">Planera</h2>
+ </div>
+
+    <ul class="menu">
+ <li [class.active]="section === 'create-budget'" (click)="setSection('create-budget')">
+ <span class="menu-icon">&#8862;</span>
+ <span class="menu-text">Create Budget</span>
+ </li>
+ <li [class.active]="section === 'view-budgets'" (click)="setSection('view-budgets')">
+ <span class="menu-icon">&#9636;</span>
+ <span class="menu-text">View Budgets</span>
+ </li>
+ <li [class.active]="section === 'expense-approvals'" (click)="setSection('expense-approvals')">
+ <span class="menu-icon">&#10003;</span>
+ <span class="menu-text">Expense Approvals</span>
+ </li>
+  <li [class.active]="section === 'notifications'" (click)="setSection('notifications')">
+ <span class="menu-icon">&#9713;</span>
+ <span class="menu-text">Notifications <span *ngIf="unreadNotificationsCount > 0">({{ unreadNotificationsCount }})</span></span>
+ </li>
+ <li class="logout-item" (click)="logout()">
+ <span class="menu-icon">&#8617;</span>
+ <span class="menu-text">Logout</span>
+ </li>
+ </ul>
+ </aside>
+
+  <!-- Main Content -->
+  <div class="main">
+
+    <header class="navbar">
+      <div class="navbar-left">
+        <div class="navbar-title-group">
+          <h3>Manager Dashboard</h3>
+          <p class="navbar-subtitle">Manage budgets and expenses for your department</p>
+        </div>
+        <div class="navbar-meta">
+          <span>Total Budgets: {{ budgets.length }}</span>
+         
+        </div>
+      </div>
+
+      <div class="navbar-right">
+        <div class="user-pill">
+          <div class="user-name">{{ displayName }}</div>
+          <div class="user-role">Manager</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- Create Budget Page -->
+      <section *ngIf="section === 'create-budget'" class="card">
+        <h4>Create Budget</h4>
+
+        <form [formGroup]="budgetForm" (ngSubmit)="createBudget()" class="form-grid">
+          <div class="form-group">
+            <label>Title</label>
+            <input type="text" formControlName="title" placeholder="e.g. Q2 Marketing Budget" />
+            <div class="error" *ngIf="f['title'].invalid && (f['title'].touched || f['title'].dirty)">
+              Title is required (max 100 characters).
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Amount Allocated</label>
+            <input type="number" formControlName="amountAllocated" placeholder="e.g. 50000" />
+            <div class="error" *ngIf="f['amountAllocated'].invalid && (f['amountAllocated'].touched || f['amountAllocated'].dirty)">
+              Please enter a positive amount.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Department</label>
+            <select formControlName="departmentId">
+              <option value="">Select department</option>
+              <option *ngFor="let dept of departments" [value]="dept.departmentId">
+                {{ dept.departmentName }}
+              </option>
+            </select>
+            <div class="error" *ngIf="f['departmentId'].invalid && (f['departmentId'].touched || f['departmentId'].dirty)">
+              Please select a department.
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="primary-btn">
+              Create Budget
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- View Budgets -->
+      <section *ngIf="section === 'view-budgets'" class="card">
+        <div class="card-header">
+          <h4>Budgets</h4>
+        </div>
+
+        <div *ngIf="isLoadingBudgets">Loading budgets...</div>
+
+        <table *ngIf="!isLoadingBudgets && budgets.length" class="table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Amount</th>
+              <th>Department</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let b of budgets">
+              <td>{{ b.title }}</td>
+              <td>{{ b.amountAllocated | currency }}</td>
+              <td>{{getDepartmentName(b.departmentId)}}</td>
+              <td class="actions">
+                <button type="button" class="link-btn" (click)="openEditModal(b)"> Update</button>
+                <button type="button" class="danger-btn" (click)="deleteBudget(b.budgetId)">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div *ngIf="!isLoadingBudgets && !budgets.length" class="empty-state">
+          No budgets created yet.
+        </div>
+      </section>
+
+      <!-- Expense Approvals (separate navbar item) -->
+      <section *ngIf="section === 'expense-approvals'" class="card">
+        <div class="card-header">
+          <h4>Expense Approvals</h4>
+          
+        </div>
+
+        <div *ngIf="isLoadingExpenses">Loading expenses...</div>
+
+        <table *ngIf="!isLoadingExpenses && expenses.length" class="table">
+          <thead>
+            <tr>
+              <th>Expense Title</th>
+              <th>Amount</th>
+              <th>Employee</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let e of expenses">
+              <td>{{ e.description }}</td>
+              <td>{{ e.amount | currency }}</td>
+              <td>{{ e.employeeName || '-' }}</td>
+              <td>
+                <span class="badge" [ngClass]="{
+                  'badge-pending': e.status === 'Pending',
+                  'badge-approved': e.status === 'Approved',
+                  'badge-rejected': e.status === 'Rejected'
+                }">
+                  {{ e.status }}
+                </span>
+              </td>
+              <td class="actions">
+                <button
+                  type="button"
+                  class="primary-btn"
+                  (click)="approveExpense(e)"
+                  [disabled]="e.status !== 'Pending' || !canManageExpense(e)">
+                  Approve
+                </button>
+                <button
+                  type="button"
+                  class="danger-outline-btn"
+                  (click)="rejectExpense(e)"
+                  [disabled]="e.status !== 'Pending' || !canManageExpense(e)">
+                  Reject
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div *ngIf="!isLoadingExpenses && !expenses.length" class="empty-state">
+          No expenses submitted yet.
+        </div>
+      </section>
+
+      <!-- Notifications -->
+      <!-- <section *ngIf="section === 'notifications'" class="card">
+        <h4>Notifications</h4>
+
+        <div *ngIf="!notifications.length" class="empty-state">
+          No notifications yet. Actions on budgets and expenses will appear here.
+        </div>
+
+        <ul *ngIf="notifications.length" class="notification-list">
+          <li *ngFor="let n of notifications">
+            <div class="notification-pill" [ngClass]="{
+              'notif-expense': n.type === 'expense',
+              'notif-budget': n.type === 'budget'
+            }">
+              <span class="notif-type">
+                {{ n.type === 'expense' ? 'Expense' : 'Budget' }}
+              </span>
+              <span class="notif-message">{{ n.message }}</span>
+              <span class="notif-time">{{ n.createdAt | date:'shortTime' }}</span>
+            </div>
+          </li>
+        </ul>
+      </section> -->
+      <section *ngIf="section === 'notifications'" class="card">
+<h4>Notifications</h4>
+ 
+<div *ngIf="!notifications.length" class="empty-state">
+
+No notifications yet.
+</div>
+ 
+<ul *ngIf="notifications.length" class="notification-list">
+<li *ngFor="let n of notifications">
+<div class="notification-pill" [ngClass]="{
+
+'notif-unread': n.readStatus === 'Unread',
+
+'notif-read': n.readStatus === 'Read',
+
+'notif-expense': n.type === 'expense',
+
+'notif-budget': n.type === 'budget'
+
+}">
+<span class="notif-type">{{ n.type === 'expense' ? 'Expense' : 'Budget' }}</span>
+<span class="notif-message">{{ n.message }}</span>
+<span class="notif-time">{{ n.createdAt | date:'shortTime':'Asia/Kolkata' }}</span>
+<span class="notif-read-state" [ngClass]="{ 'is-unread': n.readStatus === 'Unread', 'is-read': n.readStatus === 'Read' }">{{ n.readStatus }}</span>
+<button type="button" class="notif-read-btn" (click)="markNotificationAsRead(n)" [disabled]="n.readStatus === 'Read'">Mark as read</button>
+</div>
+</li>
+</ul>
+</section>
+ 
+
+    </div>
+  </div>
+
+  <!-- Edit Budget Modal -->
+  <div class="modal-backdrop" *ngIf="showEditModal">
+    <div class="modal">
+      <h4>Edit Budget</h4>
+
+      <form [formGroup]="editBudgetForm" (ngSubmit)="updateBudget()" class="form-grid">
+        <div class="form-group">
+          <label>Title</label>
+          <input type="text" formControlName="title" />
+        </div>
+
+        <div class="form-group">
+          <label>Amount Allocated</label>
+          <input type="number" formControlName="amountAllocated" />
+        </div>
+
+        <div class="form-group">
+          <label>Department</label>
+          <select formControlName="departmentId">
+            <option value="">Select department</option>
+            <option *ngFor="let dept of departments" [value]="dept.departmentId">
+              {{ dept.departmentName }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-actions modal-actions">
+          <button type="button" class="secondary-btn" (click)="closeEditModal()">Cancel</button>
+          <button type="submit" class="primary-btn">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>

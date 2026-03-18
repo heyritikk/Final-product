@@ -1,0 +1,125 @@
+
+<div class="login-container">
+<div class="login-card">
+<h1 class="brand-title">Planera</h1>
+<p class="tagline">A new era of budgeting</p>
+ 
+<form *ngIf="!isForgotPasswordMode" (ngSubmit)="onSubmit()" class="login-form">
+<div class="form-group">
+<label for="email">Email<span class="required">*</span></label>
+<input 
+type="email" 
+id="email" 
+name="email" 
+[(ngModel)]="email" 
+placeholder="you@company.com"
+required
+/>
+</div>
+ 
+<div class="form-group">
+<label for="password">Password<span class="required">*</span></label>
+<input 
+type="password" 
+id="password" 
+name="password" 
+[(ngModel)]="password" 
+placeholder="Enter your password"
+required
+/>
+</div>
+ 
+<div *ngIf="errorMessage" class="error-message">
+{{ errorMessage }}
+</div>
+ 
+<button 
+type="submit" 
+class="submit-btn" 
+[disabled]="isLoading"
+>
+{{ isLoading ? 'Signing In...' : 'Sign In' }}
+</button>
+ 
+<button type="button" class="forgot-btn" (click)="startForgotPassword()">
+Forgot Password
+</button>
+</form>
+ 
+<form *ngIf="isForgotPasswordMode && !isResetPasswordStep" (ngSubmit)="submitForgotEmail()" class="login-form">
+<p class="helper-text">Please enter your email</p>
+ 
+<div class="form-group">
+<label for="forgotEmail">Email<span class="required">*</span></label>
+<input
+type="email"
+id="forgotEmail"
+name="forgotEmail"
+[(ngModel)]="forgotEmail"
+placeholder="you@company.com"
+required
+/>
+</div>
+ 
+<div *ngIf="errorMessage" class="error-message">
+{{ errorMessage }}
+</div>
+ 
+<button
+type="submit"
+class="submit-btn"
+[disabled]="isLoading"
+>
+{{ isLoading ? 'Checking...' : 'Continue' }}
+</button>
+ 
+<button type="button" class="forgot-btn" (click)="backToLogin()">
+Back to Sign In
+</button>
+</form>
+ 
+<form *ngIf="isForgotPasswordMode && isResetPasswordStep" (ngSubmit)="submitNewPassword()" class="login-form">
+<div class="form-group">
+<label for="newPassword">New Password<span class="required">*</span></label>
+<input
+type="password"
+id="newPassword"
+name="newPassword"
+[(ngModel)]="newPassword"
+placeholder="Enter new password"
+required
+/>
+<p style="color:red;" *ngIf="newPassword && newPassword.length < 6">
+* Password must be at least 6 characters
+</p>
+</div>
+
+ 
+<div *ngIf="errorMessage" class="error-message">
+{{ errorMessage }}
+</div>
+ 
+<button
+type="submit"
+class="submit-btn"
+[disabled]="isLoading"
+>
+{{ isLoading ? 'Updating...' : 'Update Password' }}
+</button>
+ 
+<button type="button" class="forgot-btn" (click)="backToLogin()">
+Back to Sign In
+</button>
+</form>
+ 
+<div *ngIf="successMessage" class="success-message">
+{{ successMessage }}
+</div>
+ 
+<p class="signup-link">
+Don't have an account? <a (click)="navigateToRegister()" class="link">Sign Up</a>
+</p>
+ 
+<a (click)="navigateToHome()" class="back-link">← Back to home</a>
+</div>
+</div>

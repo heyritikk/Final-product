@@ -1,0 +1,226 @@
+/* * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --color-primary-dark: #3D52A0;
+  --color-primary: #7091E6;
+  --color-primary-soft: #8697C4;
+  --color-primary-light: #ADBBDA;
+  --color-primary-surface: #EDE8F5;
+
+  --color-surface: #ffffff;
+  --color-surface-muted: #f5f7fb;
+  --color-border-subtle: #e5e7eb;
+  --color-text-main: #111827;
+  --color-text-muted: #6b7280;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background-color: var(--color-surface);
+  color: var(--color-text-main);
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+input,
+select {
+  font-family: inherit;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+} */
+
+* {
+ margin: 0;
+ padding: 0;
+ box-sizing: border-box;
+}
+
+:root {
+ --color-surface: #FFFFFF;
+ --color-text-main: #242424;
+ --color-text-muted: #5C7C89;
+ --color-primary-dark: #1F4959;
+ --color-primary: #1F4959;
+ --color-primary-soft: #5C7C89;
+ --color-primary-light: #5C7C89;
+ --color-primary-surface: #FFFFFF;
+ --color-surface-muted: #FFFFFF;
+ --color-border-subtle: #5C7C89;
+}
+
+html,
+body {
+ min-height: 100%;
+}
+
+body {
+ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+ position: relative;
+ isolation: isolate;
+ background:
+ linear-gradient(180deg, rgba(145, 192, 230, 0.95) 0%, rgba(168, 209, 240, 0.92) 48%, rgba(198, 224, 245, 0.9) 100%);
+ color: var(--color-text-main);
+}
+
+body::before,
+body::after {
+ content: '';
+ position: fixed;
+ inset: -4%;
+ pointer-events: none;
+}
+
+body::before {
+ z-index: -2;
+ background:
+ radial-gradient(ellipse 420px 150px at 14% 28%, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0) 72%),
+ radial-gradient(ellipse 470px 170px at 86% 30%, rgba(255, 255, 255, 0.82) 0%, rgba(255, 255, 255, 0) 72%),
+ radial-gradient(ellipse 430px 155px at 28% 66%, rgba(255, 255, 255, 0.78) 0%, rgba(255, 255, 255, 0) 72%),
+ radial-gradient(ellipse 470px 170px at 75% 70%, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 72%);
+ filter: blur(1px);
+}
+
+body::after {
+ z-index: -1;
+ background: linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.35));
+}
+
+app-root {
+ display: block;
+ min-height: 100vh;
+}
+
+.layout,
+.login-container,
+.register-container,
+.verify-container {
+ background: transparent !important;
+}
+
+.main {
+ background: transparent !important;
+}
+
+button {
+ cursor: pointer;
+ font-family: inherit;
+}
+
+input,
+select {
+ font-family: inherit;
+}
+
+a {
+ text-decoration: none;
+ color: inherit;
+}
+
+/* Unified Typography Scale (all portals/pages) */
+:root {
+ --fs-title-xl: 44px;
+ --fs-title-lg: 32px;
+ --fs-title-md: 24px;
+ --fs-body-lg: 20px;
+ --fs-body: 18px;
+ --fs-small: 16px;
+}
+
+html body app-root .title,
+html body app-root .brand-title {
+ font-size: var(--fs-title-xl) !important;
+ font-weight: 700 !important;
+ line-height: 1.15;
+}
+
+html body app-root .navbar-title-group h3,
+html body app-root .status-box h2,
+html body app-root .modal h3,
+html body app-root .card-header h4 {
+ font-size: var(--fs-title-md) !important;
+ font-weight: 700 !important;
+ line-height: 1.2;
+}
+
+html body app-root .sidebar-title,
+html body app-root .logo-text,
+html body app-root .menu-text,
+html body app-root .user-name {
+ font-size: var(--fs-body-lg) !important;
+ font-weight: 700 !important;
+ line-height: 1.2;
+}
+
+html body app-root .navbar-subtitle,
+html body app-root .navbar-meta span,
+html body app-root .tagline,
+html body app-root .subtitle,
+html body app-root .description,
+html body app-root .helper-text,
+html body app-root .signup-link,
+html body app-root .login-link,
+html body app-root .back-link,
+html body app-root .empty-state,
+html body app-root .muted-text,
+html body app-root .error-text,
+html body app-root .success-message,
+html body app-root .status-box p,
+html body app-root .status-box .redirect,
+html body app-root .table,
+html body app-root .table td,
+html body app-root .table th,
+html body app-root option {
+ font-size: var(--fs-small) !important;
+ line-height: 1.4;
+}
+
+html body app-root .form-group label {
+ font-size: var(--fs-body) !important;
+ font-weight: 600 !important;
+ line-height: 1.3;
+}
+
+html body app-root input,
+html body app-root select,
+html body app-root textarea,
+html body app-root button,
+html body app-root .action-btn,
+html body app-root .link-btn,
+html body app-root .primary-btn,
+html body app-root .secondary-btn,
+html body app-root .danger-btn,
+html body app-root .danger-outline-btn,
+html body app-root .submit-btn,
+html body app-root .forgot-btn,
+html body app-root .role-btn,
+html body app-root .get-started-btn {
+ font-size: var(--fs-body) !important;
+ line-height: 1.35;
+}
+
+@media (max-width: 900px) {
+ :root {
+ --fs-title-xl: 36px;
+ --fs-title-lg: 28px;
+ --fs-title-md: 22px;
+ --fs-body-lg: 18px;
+ --fs-body: 16px;
+ --fs-small: 15px;
+ }
+}
+
+/* Planera brand text: slightly larger */
+html body app-root .sidebar-title,
+html body app-root .logo-text {
+ font-size: 24px !important;
+}

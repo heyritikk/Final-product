@@ -1,0 +1,62 @@
+full Response
+amount
+: 
+8888
+budgetId
+: 
+1016
+description
+: 
+"ttttt"
+employeeName
+: 
+"Rakshita Mundimani"
+id
+: 
+1036
+managerEmail
+: 
+"shweta@gmail.com"
+managerId
+: 
+3029
+status
+: 
+"Pending"
+title
+: 
+"ttttt
+
+
+
+Expense array
+amount
+: 
+8888
+budgetId
+: 
+1016
+description
+: 
+"ttttt"
+employeeName
+: 
+"Rakshita Mundimani"
+id
+: 
+1036
+managerEmail
+: 
+"shweta@gmail.com"
+managerId
+: 
+3029
+status
+: 
+"Pending"
+title
+: 
+"ttttt"
+
+
+ab dhek

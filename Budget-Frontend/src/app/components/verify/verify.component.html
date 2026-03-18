@@ -1,0 +1,31 @@
+<div class="verify-container">
+  <div class="verify-card">
+    <h1 class="brand-title">Planera</h1>
+    <p class="tagline">A new era of budgeting</p>
+
+    <!-- Loading -->
+    <div *ngIf="status === 'loading'" class="status-box loading">
+      <div class="spinner"></div>
+      <p>Verifying your email...</p>
+    </div>
+
+    <!-- Success -->
+    <div *ngIf="status === 'success'" class="status-box success">
+      <span class="icon">✓</span>
+      <h2>Email Verified!</h2>
+      <p>{{ message }}</p>
+      <p class="subtitle">You can now sign in to your account.</p>
+      <p class="redirect">Redirecting to login in 3 seconds...</p>
+      <button class="submit-btn" (click)="goToLogin()">Sign In Now</button>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="status === 'error'" class="status-box error">
+      <span class="icon">✕</span>
+      <h2>{{ message }}</h2>
+      <p>{{ errorDetails }}</p>
+      <button class="submit-btn" (click)="goToLogin()">Go to Sign In</button>
+      <a (click)="goToHome()" class="back-link">← Back to home</a>
+    </div>
+  </div>
+</div>

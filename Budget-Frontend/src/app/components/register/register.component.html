@@ -1,0 +1,107 @@
+<div class="register-container">
+  <div class="register-card">
+    <h1 class="brand-title">Planera</h1>
+    <p class="tagline">A new era of budgeting</p>
+
+    <form (ngSubmit)="onSubmit()" class="register-form" autocomplete="off">
+       <div class="form-group">
+       
+           
+      </div>
+
+      <div class="form-group">
+        <label for="name">Full Name<span class="required">*</span></label>
+        <input 
+          type="text" 
+          id="name" 
+          name="name" 
+          [(ngModel)]="name" 
+          placeholder="John Doe"
+          autocomplete="off"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email<span class="required">*</span></label>
+        <input 
+          type="email" 
+          id="email" 
+          name="email" 
+          [(ngModel)]="email" 
+          placeholder="you@company.com"
+          autocomplete="off"
+          required
+        />
+      </div>
+      <div class="form-group">
+  <label for="role">Role<span class="required">*</span></label>
+  <select
+    id="role"
+    name="role"
+    [(ngModel)]="selectedRole"
+    required
+  >
+    <option value="">Select Role</option>
+    <option value="Employee">Employee</option>
+    <option value="Manager">Manager</option>
+  </select>
+</div>
+
+      <div class="form-group">
+        <label for="department">Department<span class="required">*</span></label>
+        <select
+          id="department"
+          name="department"
+          [(ngModel)]="departmentId"
+          required
+        >
+          <option value="">Select department</option>
+          <option *ngFor="let dept of departments" [value]="dept.departmentId">
+            {{ dept.departmentName }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password<span class="required">*</span></label>
+        <input 
+          type="password" 
+          id="password" 
+          name="password" 
+          [(ngModel)]="password" 
+          placeholder="Enter your password"
+          autocomplete="off"
+          required
+
+        />
+        <p class="password-message" *ngIf="password && password.length < 6">
+    * Password must be at least 6 characters
+    </p>
+    </div>
+      
+
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+
+      <div *ngIf="successMessage" class="success-message">
+        {{ successMessage }}
+      </div>
+
+      <button 
+        type="submit" 
+        class="submit-btn" 
+        [disabled]="isLoading"
+      >
+        {{ isLoading ? 'Creating Account...' : 'Create Account' }}
+      </button>
+    </form>
+
+    <p class="login-link">
+      Already have an account? <a (click)="navigateToLogin()" class="link">Sign In</a>
+    </p>
+
+    <a (click)="navigateToHome()" class="back-link">← Back to home</a>
+  </div>
+</div>

@@ -1,0 +1,193 @@
+<div class="layout" [class.sidebar-collapsed]="!isSidebarOpen">
+
+ <!-- Sidebar -->
+ <aside class="sidebar">
+ <div class="sidebar-head">
+ <button type="button" class="menu-toggle sidebar-toggle" (click)="toggleSidebar()" aria-label="Toggle sidebar">
+ <span></span>
+ <span></span>
+ <span></span>
+ </button>
+ <h2 class="sidebar-title">Planera</h2>
+ </div>
+
+ <ul class="menu">
+ <li [class.active]="selectedMenu === 'overview'" (click)="setSection('overview')">
+ <span class="menu-icon">&#8962;</span>
+ <span class="menu-text">Dashboard</span>
+ </li>
+ <li [class.active]="selectedMenu === 'department'" (click)="setSection('department')">
+ <span class="menu-icon">&#9638;</span>
+ <span class="menu-text">Department Report</span>
+ </li>
+ <li [class.active]="selectedMenu === 'budget'" (click)="setSection('budget')">
+ <span class="menu-icon">&#9635;</span>
+ <span class="menu-text">Budget Report</span>
+ </li>
+ <li [class.active]="selectedMenu === 'summary'" (click)="setSection('summary')">
+ <span class="menu-icon">&#9684;</span>
+ <span class="menu-text">Summary Report</span>
+ </li>
+ <li class="logout-item" (click)="logout()">
+ <span class="menu-icon">&#8617;</span>
+ <span class="menu-text">Logout</span>
+ </li>
+ </ul>
+ </aside>
+
+ <!-- Main Content -->
+ <div class="main">
+
+ <header class="navbar">
+ <div class="navbar-left">
+ <div class="navbar-title-group">
+ <h3>Admin Dashboard</h3>
+ <p class="navbar-subtitle">Manage budgets and reports across the organization</p>
+ </div>
+ </div>
+ <div class="navbar-right">
+ <button type="button" class="primary-btn download-btn" (click)="downloadPdf()">Download PDF</button>
+ <div class="user-pill">
+ <div class="user-name">{{ displayName | titlecase }}</div>
+ </div>
+ </div>
+ </header>
+
+ 
+
+ <div class="content content-fit" id="adminReportContent">
+
+ <!-- Overview cards -->
+ <section *ngIf="selectedMenu === 'overview'" id="overviewSection" class="card-grid">
+ <div class="stat-card">
+ <h4>Total Departments</h4>
+ <p class="stat-value">{{ departmentReport.length || 0 }}</p>
+ </div>
+ <div class="stat-card">
+ <h4>Budget Rows</h4>
+ <p class="stat-value">{{ budgetReport.length || 0 }}</p>
+ </div>
+ <div class="stat-card">
+ <h4>Summary Items</h4>
+ <p class="stat-value">{{ summaryReport.length || 0 }}</p>
+ </div>
+ </section>
+
+ <!-- Department Report -->
+ <section *ngIf="selectedMenu === 'department'" class="single-report-layout">
+ <div class="card focus-card" id="departmentSection">
+ <div class="card-header">
+ <h4>Department Report</h4>
+ <div class="report-filters">
+ <label for="departmentFilter">Department</label>
+ <select id="departmentFilter" [value]="selectedDepartmentFilter" (change)="onDepartmentFilterChange($event)">
+ <option value="All">All</option>
+ <option *ngFor="let d of availableDepartments" [value]="d">{{ d }}</option>
+ </select>
+ </div>
+ </div>
+
+ <div *ngIf="isLoadingDepartment">Loading department report...</div>
+ <div *ngIf="departmentError" class="error-text">{{ departmentError }}</div>
+
+ <div *ngIf="!isLoadingDepartment && !departmentError && filteredDepartmentReport.length" class="table-wrap table-wrap-fill">
+ <table class="table">
+ <thead>
+ <tr>
+ <th *ngFor="let key of objectKeys(filteredDepartmentReport[0])">{{ key | titlecase }}</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr *ngFor="let row of filteredDepartmentReport">
+ <td *ngFor="let key of objectKeys(filteredDepartmentReport[0])">
+ {{ row[key] }}
+ </td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+
+ <div *ngIf="!isLoadingDepartment && !departmentError && !departmentReport.length" class="empty-state">
+ No department report data.
+ </div>
+ </div>
+ </section>
+
+ <!-- Budget Report -->
+ <section *ngIf="selectedMenu === 'budget'" class="single-report-layout">
+ <div class="card focus-card" id="budgetSection">
+ <div class="card-header">
+ <h4>Budget Report</h4>
+ <div class="report-filters">
+ <label for="budgetDepartmentFilter">Department</label>
+ <select id="budgetDepartmentFilter" [value]="selectedDepartmentFilter" (change)="onDepartmentFilterChange($event)">
+ <option value="All">All</option>
+ <option *ngFor="let d of availableDepartments" [value]="d">{{ d }}</option>
+ </select>
+ </div>
+ </div>
+
+ <div *ngIf="isLoadingBudget">Loading budget report...</div>
+ <div *ngIf="budgetError" class="error-text">{{ budgetError }}</div>
+
+ <div *ngIf="!isLoadingBudget && !budgetError && filteredBudgetReport.length" class="table-wrap table-wrap-fill">
+ <table class="table">
+ <thead>
+ <tr>
+ 
+ <th *ngFor="let key of objectKeys(budgetReport[0])">{{key | titlecase}}</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr *ngFor="let row of filteredBudgetReport">
+ <td *ngFor="let key of objectKeys(budgetReport[0])">
+ {{ row[key] }}
+ </td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+
+ <div *ngIf="!isLoadingBudget && !budgetError && !budgetReport.length" class="empty-state">
+ No budget report data.
+ </div>
+ </div>
+ </section>
+
+ <!-- Summary Report -->
+ <section *ngIf="selectedMenu === 'summary'" class="single-report-layout">
+ <div class="card focus-card" id="summarySection">
+ <div class="card-header">
+ <h4>Summary Report</h4>
+ </div>
+
+ <div *ngIf="isLoadingSummary">Loading summary report...</div>
+ <div *ngIf="summaryError" class="error-text">{{ summaryError }}</div>
+
+ <div *ngIf="!isLoadingSummary && !summaryError && summaryReport.length" class="table-wrap table-wrap-fill">
+ <table class="table">
+ <thead>
+ <tr>
+ <th *ngFor="let key of objectKeys(summaryReport[0])">{{ key | titlecase }}</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr *ngFor="let row of summaryReport">
+ <td *ngFor="let key of objectKeys(summaryReport[0])">
+ {{ row[key] }}
+ </td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+
+ <div *ngIf="!isLoadingSummary && !summaryError && !summaryReport.length" class="empty-state">
+ No summary report data.
+ </div>
+ </div>
+ </section>
+
+ </div>
+ </div>
+
+</div>
